@@ -45,11 +45,13 @@ After the setup phase, you're good to go! You do not need to repeat this phase a
 
 You can use either a commandline interface (CLI) to upload/download files, or use the library sdk. 
 
+**important node**: You should extract the file or folder identifiers from their corresponding link.
+
 #### CLI
 
 Use the following format for download and upload
 ```bash
-curlgoogle_upload <file_name> <file1> <file2> ... <fileN> (optional)<file_id>
+curlgoogle_upload <file_name> <file1> <file2> ... <fileN> (optional)<folder_id>
 ```
 `file_name` will determine the `zip` file that will be created and uploaded to your Google Drive. `file1` to `fileN` are the files that you want to upload. `file_id` is the id of the folder you want to upload to. If you do not specify a `file_id`, the file will be uploaded to the root directory of your Google Drive.
 
