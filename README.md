@@ -1,4 +1,5 @@
 # CurlGoogle
+[![PyPI](https://img.shields.io/pypi/v/curlgoogle.svg?color=green)](https://pypi.org/project/curlgoogle/)
 
 CurlGoogle is a lightweight, easy-to-use, and extremely simple library that allows you to link devices to Google accounts and transfer files (upload/download) using nothing more than the command line. Built on the principles demonstrated in [this article](https://towardsdatascience.com/uploading-files-to-google-drive-directly-from-the-terminal-using-curl-2b89db28bb06), this library offers a lean alternative to more extensive libraries such as [google-drive](https://pypi.org/project/google-drive/). 
 
