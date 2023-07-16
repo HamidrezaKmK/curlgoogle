@@ -4,10 +4,6 @@ A Python script to automate file download from Google Drive and optional unzippi
 import os, json, requests, zipfile
 from .info import get_client_info
 
-#Owner information goes here!
-# client_id = '1090129644259-6up92q1rak04u9uu13scshf76d5jcqmf.apps.googleusercontent.com'
-# client_secret = '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'
-
 def download(
     file_id,
     unzip: bool = True,

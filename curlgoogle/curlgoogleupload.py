@@ -9,11 +9,7 @@ import os, sys, json, zipfile
 if sys.version[0] == '3':
     raw_input = lambda x: input(x)
 
-#Owner information goes here!
 from .info import get_client_info
-
-#'1090129644259-6up92q1rak04u9uu13scshf76d5jcqmf.apps.googleusercontent.com'
-# client_secret = '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'
 
 
 def upload(
