@@ -53,8 +53,8 @@ def upload(
             for path in filepaths:
                 if recursive and os.path.isdir(path):
                     for dirpath, dirnames, files in os.walk(path):
-                        for name in files:
-                            myzip.write(os.path.join(dirpath, name))
+                        for name_ in files:
+                            myzip.write(os.path.join(dirpath, name_))
                 else:
                     myzip.write(path)
         filepath = '%s.zip'%name
