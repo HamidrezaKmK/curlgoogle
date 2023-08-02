@@ -51,15 +51,21 @@ You can use either a commandline interface (CLI) to upload/download files, or us
 
 Use the following format for download and upload
 ```bash
-curlgoogle_upload <file_name> <file1> <file2> ... <fileN> (optional)<folder_id>
+curlgoogle_upload <file/folder-1> <file/folder-2> ... <file/folder-N> (optional)<folder_id>
 ```
-`file_name` will determine the `zip` file that will be created and uploaded to your Google Drive. `file1` to `fileN` are the files that you want to upload. `file_id` is the id of the folder you want to upload to. If you do not specify a `file_id`, the file will be uploaded to the root directory of your Google Drive.
+This will upload all your files or folders into a folder with the specified identifier.
+
+You can also pick a bunch of folders or files, zip them into a single file with a specific name and then upload them all at once using the following convention:
+
+```bash
+curlgoogle_upload <file/folder-1> <file/folder-2> ... <file/folder-N> (optional)<folder_id> -m -n <zip_file_name>
+```
 
 For download use the following format:
 ```bash
-curlgoogle_download <file_id>
+curlgoogle_download <file_id1> <file_id2> ... <file_idN>
 ```
-This will automatically download the file with the specified `file_id` to your current directory and unzip it for you.
+This will automatically download the files and extract them.
 
 ### SDK
 

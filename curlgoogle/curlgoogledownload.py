@@ -5,7 +5,7 @@ import os, json, requests, zipfile
 from .info import get_client_info
 
 def download(
-    file_id,
+    file_ids: list,
     unzip: bool = True,
 ):
     """
@@ -27,23 +27,24 @@ def download(
     # get token
     cmd2 = json.loads(os.popen(('curl -d client_id=%s -d client_secret=%s -d device_code=%s -d grant_type=urn~~3Aietf~~3Aparams~~3Aoauth~~3Agrant-type~~3Adevice_code https://accounts.google.com/o/oauth2/token'%(client_id,client_secret,cmd1['device_code'])).replace('~~','%')).read())
 
-    # download the file
-    filename = 'file_from_drive.zip'
-    url = "https://www.googleapis.com/drive/v3/files/%s?alt=media" % file_id
-    headers = {"Authorization": "Bearer %s" % cmd2["access_token"]}
-    response = requests.get(url, headers=headers)
+    for file_id in file_ids:
+        # download the file
+        filename = 'file_from_drive.zip'
+        url = "https://www.googleapis.com/drive/v3/files/%s?alt=media" % file_id
+        headers = {"Authorization": "Bearer %s" % cmd2["access_token"]}
+        response = requests.get(url, headers=headers)
 
-    # save the file
-    with open(filename, 'wb') as f:
-        f.write(response.content)
+        # save the file
+        with open(filename, 'wb') as f:
+            f.write(response.content)
 
-    # unzip the file if -u is specified and the file is a zip file
-    if unzip and zipfile.is_zipfile(filename):
-        with zipfile.ZipFile(filename, 'r') as zip_ref:
-            zip_ref.extractall('.')
-        print('File unzipped successfully.')
-        # remove the zip file
-        os.remove(filename)
-    else:
-        print('File downloaded successfully.')
+        # unzip the file if -u is specified and the file is a zip file
+        if unzip and zipfile.is_zipfile(filename):
+            with zipfile.ZipFile(filename, 'r') as zip_ref:
+                zip_ref.extractall('.')
+            print('File unzipped successfully.')
+            # remove the zip file
+            os.remove(filename)
+        else:
+            print('File downloaded successfully.')
 

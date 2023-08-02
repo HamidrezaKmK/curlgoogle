@@ -5,6 +5,7 @@ This should require nothing more than the system python version and curl.
 Dan Ellis 2020
 '''
 import os, sys, json, zipfile
+import typing as th
 
 if sys.version[0] == '3':
     raw_input = lambda x: input(x)
@@ -14,10 +15,11 @@ from .info import get_client_info
 
 def upload(
     filepaths,
-    name: str,
     directory_id: str,
+    name: th.Optional[str] = None,
     zip: bool = True,
     recursive: bool = True,
+    multifile: bool = False,
 ):
     """
     This upload function sdk provides a simple interface to upload files to google drive.
@@ -47,31 +49,61 @@ def upload(
 
     # zip files if -z is specified
     remove_file_after_upload = False
-    filepath = filepaths[0] # use the first file if not zipping
-    if zip:
-        with zipfile.ZipFile('%s.zip'%name, 'w') as myzip:
-            for path in filepaths:
-                if recursive and os.path.isdir(path):
-                    for dirpath, dirnames, files in os.walk(path):
+    if not multifile:
+        for i, filepath in enumerate(filepaths):
+            # get the name of filepath if it is not a directory
+            
+            print(f"uploading file [{i+1}/{len(filepaths)}]")
+            with zipfile.ZipFile('%s.zip'%filepath, 'w') as myzip:
+                if recursive and os.path.isdir(filepath):
+                    for dirpath, dirnames, files in os.walk(filepath):
                         for name_ in files:
                             myzip.write(os.path.join(dirpath, name_))
                 else:
-                    myzip.write(path)
-        filepath = '%s.zip'%name
-        remove_file_after_upload = True
+                    myzip.write(filepath)
+            file_path = '%s.zip'%filepath
+            remove_file_after_upload = True
+            # upload to drive
+            metadata = { "name" : filepath }
+            if directory_id:
+                metadata["parents"] = [directory_id]
+            metadata_str = json.dumps(metadata) # use json.dumps to properly format the json string
+            cmd4 = os.popen('''
+            curl -X POST -L -H "Authorization: Bearer %s" -F 'metadata=%s;type=application/json;charset=UTF-8' -F "file=@%s;type=application/zip" "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+            '''%(cmd2["access_token"],metadata_str,file_path)).read()
+            
+            if remove_file_after_upload:
+                os.remove(file_path)
+                
+            print(cmd4)
+            print('end')
+            print("=====", end='\n\n')
+    else:
+        filepath = filepaths[0] # use the first file if not zipping
+        if zip:
+            with zipfile.ZipFile('%s.zip'%name, 'w') as myzip:
+                for path in filepaths:
+                    if recursive and os.path.isdir(path):
+                        for dirpath, dirnames, files in os.walk(path):
+                            for name_ in files:
+                                myzip.write(os.path.join(dirpath, name_))
+                    else:
+                        myzip.write(path)
+            filepath = '%s.zip'%name
+            remove_file_after_upload = True
 
-    # upload to drive
-    metadata = { "name" : name }
-    if directory_id:
-        metadata["parents"] = [directory_id]
-    metadata_str = json.dumps(metadata) # use json.dumps to properly format the json string
-    cmd4 = os.popen('''
-    curl -X POST -L -H "Authorization: Bearer %s" -F 'metadata=%s;type=application/json;charset=UTF-8' -F "file=@%s;type=application/zip" "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
-    '''%(cmd2["access_token"],metadata_str,filepath)).read()
-    
-    if remove_file_after_upload:
-        os.remove(filepath)
+        # upload to drive
+        metadata = { "name" : name }
+        if directory_id:
+            metadata["parents"] = [directory_id]
+        metadata_str = json.dumps(metadata) # use json.dumps to properly format the json string
+        cmd4 = os.popen('''
+        curl -X POST -L -H "Authorization: Bearer %s" -F 'metadata=%s;type=application/json;charset=UTF-8' -F "file=@%s;type=application/zip" "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+        '''%(cmd2["access_token"],metadata_str,filepath)).read()
         
-    print(cmd4)
-    print('end')
+        if remove_file_after_upload:
+            os.remove(filepath)
+            
+        print(cmd4)
+        print('end')
 
